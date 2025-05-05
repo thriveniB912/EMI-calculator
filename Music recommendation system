@@ -1,0 +1,118 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMukva9C7/5P35DEgjOpwqI",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/thriveniB912/EMI-calculator/blob/main/Music%20recommendation%20system\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "DTkfDond8sZC"
+      },
+      "outputs": [],
+      "source": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import numpy as np\n",
+        "from tensorflow.keras.models import Model\n",
+        "from tensorflow.keras.layers import Input, Embedding, Flatten, Dot, Dense, Concatenate\n",
+        "from tensorflow.keras.optimizers import Adam\n",
+        "\n",
+        "# Dummy dataset (user_id, song_id, rating)\n",
+        "num_users = 1000\n",
+        "num_songs = 500\n",
+        "embedding_size = 50\n",
+        "\n",
+        "# Simulated training data\n",
+        "user_ids = np.random.randint(0, num_users, size=10000)\n",
+        "song_ids = np.random.randint(0, num_songs, size=10000)\n",
+        "ratings = np.random.randint(1, 6, size=10000)\n",
+        "\n",
+        "# Inputs\n",
+        "user_input = Input(shape=(1,), name='user_input')\n",
+        "song_input = Input(shape=(1,), name='song_input')\n",
+        "\n",
+        "# Embeddings\n",
+        "user_embedding = Embedding(input_dim=num_users, output_dim=embedding_size, name='user_embedding')(user_input)\n",
+        "song_embedding = Embedding(input_dim=num_songs, output_dim=embedding_size, name='song_embedding')(song_input)\n",
+        "\n",
+        "# Flatten the embedding vectors\n",
+        "user_vec = Flatten()(user_embedding)\n",
+        "song_vec = Flatten()(song_embedding)\n",
+        "\n",
+        "# Dot product of user and song vectors (can also use Concatenate + Dense layers for deep models)\n",
+        "dot_product = Dot(axes=1)([user_vec, song_vec])\n",
+        "\n",
+        "# Optional: Add dense layer for more complexity\n",
+        "dense = Dense(64, activation='relu')(dot_product)\n",
+        "output = Dense(1, activation='linear')(dense)\n",
+        "\n",
+        "# Build and compile model\n",
+        "model = Model(inputs=[user_input, song_input], outputs=output)\n",
+        "model.compile(optimizer=Adam(learning_rate=0.001), loss='mean_squared_error')\n",
+        "\n",
+        "# Train model\n",
+        "model.fit([user_ids, song_ids], ratings, epochs=5, batch_size=64, verbose=1)\n",
+        "\n",
+        "# Example prediction\n",
+        "user_test = np.array([15])\n",
+        "song_test = np.array([200])\n",
+        "predicted_rating = model.predict([user_test, song_test])\n",
+        "print(f\"Predicted Rating: {predicted_rating[0][0]:.2f}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "MMzBSKAl8yPl",
+        "outputId": "805b606a-9619-4746-ad0a-5cdbf7da8e2e"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/5\n",
+            "\u001b[1m157/157\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m3s\u001b[0m 5ms/step - loss: 9.2100\n",
+            "Epoch 2/5\n",
+            "\u001b[1m157/157\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 3ms/step - loss: 2.5163\n",
+            "Epoch 3/5\n",
+            "\u001b[1m157/157\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step - loss: 1.5853\n",
+            "Epoch 4/5\n",
+            "\u001b[1m157/157\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 3ms/step - loss: 0.3452\n",
+            "Epoch 5/5\n",
+            "\u001b[1m157/157\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step - loss: 0.0782\n",
+            "\u001b[1m1/1\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 134ms/step\n",
+            "Predicted Rating: 2.73\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
